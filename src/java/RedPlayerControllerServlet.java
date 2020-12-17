@@ -5,6 +5,7 @@
  */
 
 import beans.Player;
+import data.PlayerDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -33,40 +34,39 @@ public class RedPlayerControllerServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
+        HttpSession session = request.getSession();
         String action = request.getParameter("action");
+        PlayerDAO playerDAO = new PlayerDAO();
 
         if (action.equals("Add")) {
-            HttpSession session = request.getSession();
-            ArrayList<Player> redPlayers = (ArrayList<Player>) session.getAttribute("redPlayers");
-            if (redPlayers == null) {
-                redPlayers = new ArrayList<Player>();
-            }
 
             Player redPlayer = new Player();
-
-            String active = request.getParameter("active");
 
             redPlayer.setName(request.getParameter("name"));
             redPlayer.setAddress(request.getParameter("address"));
             redPlayer.setTeam(request.getParameter("team"));
             redPlayer.setRole(request.getParameter("role"));
-
+            String active = request.getParameter("active");
             boolean activeOrNot;
 
             if (active != null) {
                 activeOrNot = true;
                 redPlayer.setActive(activeOrNot);
+
             } else {
                 activeOrNot = false;
                 redPlayer.setActive(activeOrNot);
+
             }
 
-            redPlayers.add(redPlayer);
+            playerDAO.createRedPlayer(redPlayer);
+
+            ArrayList<Player> redPlayers = playerDAO.retrieveAllRedPlayers();
             session.setAttribute("redPlayers", redPlayers);
-            response.sendRedirect("addRedPlayer.jsp");
+
+            response.sendRedirect("viewRedTeam.jsp");
         } else {
-            response.sendRedirect("index.jsp");
+            response.sendRedirect("viewRedTeam.jsp");
         }
     }
 
