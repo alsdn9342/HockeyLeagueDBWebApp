@@ -5,6 +5,7 @@
  */
 
 import beans.Player;
+import data.PlayerDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -33,62 +34,44 @@ public class EditBluePlayerServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-       
-        int idofTarget = Integer.parseInt(request.getParameter("id"));
-        
-        String name = request.getParameter("name");
-        String address = request.getParameter("address");
-        String team = request.getParameter("team");
-        String role = request.getParameter("role");
-        String active = request.getParameter("active");
+
+        HttpSession session = request.getSession();
+        int id = Integer.parseInt(request.getParameter("id"));
         String action = request.getParameter("action");
+        PlayerDAO playerDAO = new PlayerDAO();
 
-        if (action.equals("Save")) {
+        if (action.equals("Edit")) {
+            Player player = playerDAO.retrieveBluePlayerByID(id);
+            session.setAttribute("player", player);
 
-            HttpSession session = request.getSession();
-            ArrayList<Player> bluePlayers = (ArrayList<Player>) session.getAttribute("bluePlayers");
-            if (bluePlayers == null) {
-                bluePlayers = new ArrayList<Player>();
-            }
+            response.sendRedirect("editBluePlayer.jsp");
 
-            Player editPlayer = new Player();
-            
-            editPlayer.setName(name);
-            editPlayer.setAddress(address);
-            editPlayer.setTeam(team);
-            editPlayer.setRole(role);
+        } else if (action.equals("Save")) {
+            Player player = new Player();
 
-            boolean activeOrNot;
-            if (active != null) {
-                activeOrNot = true;
-                editPlayer.setActive(activeOrNot);
+            player.setName(request.getParameter("name"));
+            player.setAddress(request.getParameter("address"));
+            player.setTeam(request.getParameter("team"));
+            player.setRole(request.getParameter("role"));
+            player.setID(Integer.parseInt(request.getParameter("id")));
+
+            boolean isActive;
+
+            if (request.getParameter("active") != null) {
+                isActive = true;
+                player.setActveOrNot("Activated");
             } else {
-                activeOrNot = false;
-                editPlayer.setActive(activeOrNot);
+                isActive = false;
+                player.setActveOrNot("Not Activated");
             }
 
-            int index = -1;
-            for (int i = 0; i < bluePlayers.size(); i++) {
-                Player bluePlayer = bluePlayers.get(i);
+            player.setActive(isActive);
 
-                if (bluePlayer.getID() == idofTarget) {
-
-                    index = i;
-
-                }
-            }
-
-            if (bluePlayers == null) {
-                System.out.println("Blue Players is NULL");
-            }
-
-            if (index != -1 && bluePlayers != null) {
-                bluePlayers.set(index, editPlayer);
-            }
-
+            playerDAO.updateBluePlayer(player);
+            ArrayList<Player> bluePlayers = playerDAO.retrieveAllBluePlayers();
             session.setAttribute("bluePlayers", bluePlayers);
-            response.sendRedirect("viewBlueTeam.jsp");
 
+            response.sendRedirect("viewBlueTeam.jsp");
         } else {
             response.sendRedirect("viewBlueTeam.jsp");
         }

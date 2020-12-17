@@ -5,6 +5,7 @@
  */
 
 import beans.Player;
+import data.PlayerDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -33,27 +34,26 @@ public class DeleteBluePlayerServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        
         HttpSession session = request.getSession();
-        ArrayList<Player> bluePlayers
-                = (ArrayList<Player>) session.getAttribute("bluePlayers");
-        if(bluePlayers == null){
-            bluePlayers = new ArrayList<Player>();
-        }        
+        String action = request.getParameter("action");
+        PlayerDAO playerDAO = new PlayerDAO();
+        int id = Integer.parseInt(request.getParameter("id"));
         
-        String name = request.getParameter("name");
-        
-        Player delPlayer = null;
-        
-        for(Player bluePlayer : bluePlayers){
-            if(bluePlayer.getName().equals(name)){
-                delPlayer = bluePlayer;
-            }
+        if (action.equals("Delete")) {
+            Player player = playerDAO.retrieveBluePlayerByID(id);
+            session.setAttribute("player", player);
+            
+            response.sendRedirect("deleteBluePlayer.jsp");
+        } else if (action.equals("Yes")) {
+            
+            playerDAO.deleteBluePlayerByID(id);
+            ArrayList<Player> bluePlayers = playerDAO.retrieveAllBluePlayers();
+            session.setAttribute("bluePlayers", bluePlayers);
+            response.sendRedirect("viewBlueTeam.jsp");
+        } else {
+            response.sendRedirect("viewBlueTeam.jsp");
         }
-        if(delPlayer != null){
-        bluePlayers.remove(delPlayer);
-        }
-        session.setAttribute("bluePlayers", bluePlayers);
-        response.sendRedirect("viewBlueTeam.jsp");
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

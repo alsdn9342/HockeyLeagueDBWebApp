@@ -4,8 +4,10 @@
     Author     : Minwoo Park
 --%>
 
+<%@page import="data.PlayerDAO"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="beans.Player"%>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -15,51 +17,47 @@
     </head>
     <body>
         <h1>Red Team</h1>
-        <%
-            ArrayList<Player> redPlayers = (ArrayList<Player>) session.getAttribute("redPlayers");
-            if (redPlayers == null || redPlayers.size() == 0) {
-        %>           
-        NO Player
-        <%} else {%>
-    <li>
+        <c:if test="${empty redPlayers}">
+            No Players
+        </c:if>
 
-        <%
-            for (Player redPlayer : redPlayers) {
-        %>
-        <table>
-            <tr>
-                <td>Name</td><td>Address</td><td>Team</td><td>Role</td><td>Activeness</td><td></td><td></td>
-            </tr>
-            <tr>
-                <td><%=redPlayer.getName()%></td>
-                <td><%=redPlayer.getAddress()%></td>
-                <td><%=redPlayer.getTeam()%></td>
-                <td><%=redPlayer.getRole()%></td>
-                <td><%=redPlayer.isActive()%></td>
-                <td>
-                    <form action="editRedPlayer.jsp" method="GET">
-                        <input type="hidden" name="id" value="<%=redPlayer.getID()%>">
-                        <input type="hidden" name="name" value="<%=redPlayer.getName()%>">
-                        <input type="hidden" name="address" value="<%=redPlayer.getAddress()%>">
-                        <input type="hidden" name="team" value="<%=redPlayer.getTeam()%>">
-                        <input type="hidden" name="role" value="<%=redPlayer.getRole()%>">
-                        <input type="hidden" name="action" value="<%=redPlayer.isActive()%>">
-                        <input type="submit" name="action" value="Edit">
-                    </form>
-                </td>
-                <td>
-                    <form action="DeleteRedPlayerServlet" method="GET">
-                        <input type="hidden" name="name" value="<%=redPlayer.getName()%>">
-                        <input type="submit" value="Delete">
-                    </form>
-                </td>
-            </tr>
-        </table>
-        <br><br>
-        <%}%>
-    </li><%
-        }
-    %>
+        <c:if test="${not empty redPlayers}">    
+        <li>
+            <c:forEach var="redPlayers" items="${redPlayers}">
+
+                <table>
+                    <tr>
+                        <td>Name</td><td>Address</td><td>Team</td><td>Role</td><td>Activeness</td><td></td><td></td>
+                    </tr>
+                    <tr>
+                        <td>${redPlayers.name}</td>
+                        <td>${redPlayers.address}</td>
+                        <td>${redPlayers.team}</td>
+                        <td>${redPlayers.role}
+                        </td><td>${redPlayers.actveOrNot}</td>
+                        <td>
+                            <form action="EditRedPlayerServlet" method="GET">
+                                <input type="hidden" name="id" value="${redPlayers.ID}">
+                                <input type="submit" name="action" value="Edit">
+                            </form>
+                        </td>
+                        <td>
+                            <form action="DeleteRedPlayerServlet" method="GET">
+                                <input type="hidden" name="id" value="${redPlayers.ID}">
+                                <input type="submit" name="action" value="Delete">
+                            </form>
+                        </td>
+                    </tr>
+                </table>
+                <br><br>
+            </c:forEach>
+        </li>
+    </c:if>
+
+
+
+    <br>
+    <br><a href="addRedPlayer.jsp">add player</a>
     <br><a href="index.jsp">Go back to main...</a>
 </body>
 </html>

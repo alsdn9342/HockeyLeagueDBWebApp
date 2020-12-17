@@ -36,8 +36,8 @@ public class RedPlayerControllerServlet extends HttpServlet {
             throws ServletException, IOException {
         HttpSession session = request.getSession();
         String action = request.getParameter("action");
-        PlayerDAO playerDAO = new PlayerDAO();
-
+        PlayerDAO playerDAO = new PlayerDAO();  
+        
         if (action.equals("Add")) {
 
             Player redPlayer = new Player();

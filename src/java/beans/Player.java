@@ -13,17 +13,17 @@ import java.util.ArrayList;
  * @author Minwoo Park
  */
 public class Player implements Serializable {
-
+   
+    private int ID;
     private String name;
     private String address;
     private String team;
     private String role;
-    private int ID;
-    private static int nextId = 0;
     private boolean active;
+    private String actveOrNot;
 
     public Player() {
-     this.ID = nextId++;   
+
     }
 
     public String getName() {
@@ -66,24 +66,28 @@ public class Player implements Serializable {
         this.ID = ID;
     }
 
-    public String isActive() {
+    
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+    
+    public  String isActive() {
 
-        if (active == true) {
+        if (this.active == true) {
             return "Activated";
         } else {
             return "Non Activated";
         }
     }
 
-    public void setActive(boolean active) {
-        this.active = active;
+    public String getActveOrNot() {
+        return actveOrNot;
     }
 
-    public int incrementId(int index) {
-
-        index++;
-        
-        return index;
+    public void setActveOrNot(String actveOrNot) {
+        this.actveOrNot = actveOrNot;
     }
+
+    
 
 }

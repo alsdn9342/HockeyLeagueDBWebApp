@@ -5,6 +5,7 @@
  */
 
 import beans.Player;
+import data.PlayerDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -34,66 +35,49 @@ public class EditRedPlayerServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        int idofTarget = Integer.parseInt(request.getParameter("id"));
-
-        String name = request.getParameter("name");
-        String address = request.getParameter("address");
-        String team = request.getParameter("team");
-        String role = request.getParameter("role");
-        String active = request.getParameter("active");
+        HttpSession session = request.getSession();
+        int id = Integer.parseInt(request.getParameter("id"));
         String action = request.getParameter("action");
+        PlayerDAO playerDAO = new PlayerDAO();
 
-        if (action.equals("Save")) {
+        if (action.equals("Edit")) {
+            Player player = playerDAO.retrieveRedPlayerByID(id);
+            session.setAttribute("player", player);
 
-            HttpSession session = request.getSession();
-            ArrayList<Player> redPlayers = (ArrayList<Player>) session.getAttribute("redPlayers");
-            if (redPlayers == null) {
-                redPlayers = new ArrayList<Player>();
-            }
+            response.sendRedirect("editRedPlayer.jsp");
 
-            Player editPlayer = new Player();
-            editPlayer.setName(name);
-            editPlayer.setAddress(address);
-            editPlayer.setTeam(team);
-            editPlayer.setRole(role);
+        } else if (action.equals("Save")) {
+            Player player = new Player();
+         
+            player.setName(request.getParameter("name"));
+            player.setAddress(request.getParameter("address"));
+            player.setTeam(request.getParameter("team"));
+            player.setRole(request.getParameter("role"));
+            player.setID(Integer.parseInt(request.getParameter("id")));
 
-            boolean activeOrNot;
-            if (active != null) {
-                activeOrNot = true;
-                editPlayer.setActive(activeOrNot);
+            boolean isActive;
+
+            if (request.getParameter("active") != null) {
+                isActive = true;
+                player.setActveOrNot("Activated");
             } else {
-                activeOrNot = false;
-                editPlayer.setActive(activeOrNot);
+                isActive = false;
+                player.setActveOrNot("Not Activated");
             }
-
-            int index = -1;
-            for (int i = 0; i < redPlayers.size(); i++) {
-                Player redPlayer = redPlayers.get(i);
-
-                if (redPlayer.getID() == idofTarget) {
-
-                    index = i;
-
-                }
-            }
-
-            if (redPlayers == null) {
-                System.out.println("Red Players is NULL");
-            }
-
-            if (index != -1 && redPlayers != null) {
-                redPlayers.set(index, editPlayer);
-            }
-
+            player.setActive(isActive);
+            
+            playerDAO.updateRedPlayer(player);
+            ArrayList<Player> redPlayers = playerDAO.retrieveAllRedPlayers();
             session.setAttribute("redPlayers", redPlayers);
+            
             response.sendRedirect("viewRedTeam.jsp");
 
         } else {
             response.sendRedirect("viewRedTeam.jsp");
         }
     }
-
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+
     /**
      * Handles the HTTP <code>GET</code> method.
      *

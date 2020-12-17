@@ -5,6 +5,7 @@
  */
 
 import beans.Player;
+import data.PlayerDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -33,27 +34,23 @@ public class BluePlayerControllerServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession session = request.getSession();
         String action = request.getParameter("action");
-        
-        if(action.equals("Add")) {
-            HttpSession session = request.getSession();
-            ArrayList<Player> bluePlayers = (ArrayList<Player>) session.getAttribute("bluePlayers");
-            if (bluePlayers == null) {
-                bluePlayers = new ArrayList<Player>();
-            }
+        PlayerDAO playerDAO = new PlayerDAO();
+
+        if (action.equals("Add")) {
 
             Player bluePlayer = new Player();
-            
-            
+
             String active = request.getParameter("active");
-            
+
             bluePlayer.setName(request.getParameter("name"));
             bluePlayer.setAddress(request.getParameter("address"));
             bluePlayer.setTeam(request.getParameter("team"));
             bluePlayer.setRole(request.getParameter("role"));
-            
+
             boolean activeOrNot;
-         
+
             if (active != null) {
                 activeOrNot = true;
                 bluePlayer.setActive(activeOrNot);
@@ -61,12 +58,14 @@ public class BluePlayerControllerServlet extends HttpServlet {
                 activeOrNot = false;
                 bluePlayer.setActive(activeOrNot);
             }
-
-            bluePlayers.add(bluePlayer);
+            
+            playerDAO.createBluePlayer(bluePlayer);
+            ArrayList<Player> bluePlayers = playerDAO.retrieveAllBluePlayers();
             session.setAttribute("bluePlayers", bluePlayers);
-            response.sendRedirect("addBluePlayer.jsp");
+           
+            response.sendRedirect("viewBlueTeam.jsp");
         } else {
-            response.sendRedirect("index.jsp");
+            response.sendRedirect("viewBlueTeam.jsp");
         }
     }
 

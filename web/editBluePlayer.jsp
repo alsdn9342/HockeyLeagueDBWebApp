@@ -4,6 +4,8 @@
     Author     : Minwoo Park
 --%>
 
+<%@page import="beans.Player"%>
+<%@page import="data.PlayerDAO"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -12,21 +14,13 @@
         <title>JSP Page</title>
     </head>
     <body>
-        <%
-        String name = request.getParameter("name");
-        String address = request.getParameter("address");
-        String team = request.getParameter("team");
-        String role = request.getParameter("role");
-        String id = request.getParameter("id");
-        %>
-                                                  
-        <h1>Edit Blue player, <%=name %></h1>                          
+        <h1>Edit Blue player, ${player.name}</h1>                          
         <form action="EditBluePlayerServlet" method="GET">
-            <input type="hidden" size="20" name="id" value="<%=id%>">
-            <br>Name:<input type="text" size="20" name="name" value="<%=name%>">
-            <br>Address:<input type="text" size="20" name="address" value="<%=address%>">
-            <br>Team <input type="text" size="20" name="team" value="<%=team%>" >
-            <br>Role <input type="text" size="20" name="role" value="<%=role%>">
+            <input type="hidden" size="20" name="id" value="${player.ID}">
+            <br>Name:<input type="text" size="20" name="name" value="${player.name}">
+            <br>Address:<input type="text" size="20" name="address" value="${player.address}">
+            <br>Team <input type="text" size="20" name="team" value="${player.team}" >
+            <br>Role <input type="text" size="20" name="role" value="${player.role}">
             <br>Active<input type="checkbox" name="active" checked>
             <br><input type="submit" name="action" value="Save">
                 <input type="submit" name="action" value="Cancel">

@@ -4,13 +4,17 @@
  * and open the template in the editor.
  */
 
+import beans.Player;
+import data.PlayerDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  *
@@ -31,11 +35,24 @@ public class TeamChoiceServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String team = request.getParameter("team");
-        
-        if(team.equals("red")){
-            response.sendRedirect("addRedPlayer.jsp");
-        }else{
-            response.sendRedirect("addBluePlayer.jsp");
+
+        if (team.equals("red")) {
+
+            HttpSession session = request.getSession();
+            PlayerDAO playerDAO = new PlayerDAO();
+            ArrayList<Player> redPlayers = playerDAO.retrieveAllRedPlayers();
+            session.setAttribute("redPlayers", redPlayers);
+            response.sendRedirect("viewRedTeam.jsp");
+
+        } else {
+
+            HttpSession session = request.getSession();
+           
+            PlayerDAO playerDAO = new PlayerDAO();
+            ArrayList<Player> bluePlayers = playerDAO.retrieveAllBluePlayers();
+            session.setAttribute("bluePlayers", bluePlayers);
+
+            response.sendRedirect("viewBlueTeam.jsp");
         }
     }
 

@@ -18,9 +18,7 @@
                 <option value="red">Red</option>
                     <option value="blue">Blue</option>
                   </select>
-            <br><br><input type="submit" name="action" value="Add">
+            <br><br><input type="submit" name="action" value="Select">
         </form>
-        <br><a href="viewRedTeam.jsp">View Red Team</a>
-        <br><a href="viewBlueTeam.jsp">View Blue Team</a>
     </body>
 </html>
